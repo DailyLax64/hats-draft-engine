@@ -1,0 +1,34 @@
+name: Sync Live Fantasy Projections
+
+on:
+  schedule:
+    - cron: '0 10 * * *'  # Runs daily at 6:00 AM EST
+  workflow_dispatch:      # Allows manual trigger button
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          pip install requests
+
+      - name: Run projection sync engine
+        run: |
+          python sync_data.py
+
+      - name: Commit and push updated projections
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add projections.json
+          git commit -m "Auto-update live player projections" || echo "No changes detected"
+          git push
