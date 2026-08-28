@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hat's Fantasy League - Draft Assistant</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f8fafc; 
+            color: #0f172a; 
+            margin: 0; 
+            padding: 14px 16px; 
+        }
+        .container { max-width: 1650px; margin: 0 auto; }
+        
+        .layout-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 350px; 
+            gap: 16px; 
+            align-items: start; 
+        }
+        @media (max-width: 1100px) { 
+            .layout-grid { grid-template-columns: 1fr; } 
+        }
+
+        h1 { 
+            color: #0284c7; 
+            margin: 0 0 2px 0; 
+            font-size: 24px; 
+            letter-spacing: 0.5px;
+            font-weight: 800;
+        }
+        p.subtitle { color: #64748b; font-size: 0.85em; margin: 0 0 8px 0; }
+        .header-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+
+        .status-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .card { 
+            background: #ffffff; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            padding: 10px 12px; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .card-label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; margin-bottom: 2px; }
+        .card-val { font-size: 16px; font-weight: bold; color: #0284c7; }
+        .card-val.on-clock { color: #16a34a; font-weight: 800; }
+        
+        .alert-banner { 
+            border-radius: 6px; 
+            padding: 8px 12px; 
+            margin-bottom: 12px; 
+            font-size: 12px; 
+            display: none; 
+            align-items: center; 
+            justify-content: space-between;
+        }
+        .alert-risk {
+            background: #fee2e2; 
+            border: 1px solid #ef4444; 
+            color: #991b1b; 
+        }
+        .alert-opportunity {
+            background: #dcfce7; 
+            border: 1px solid #22c55e; 
+            color: #166534; 
+        }
+
+        .snake-tracker-panel {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .snake-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            color: #64748b;
+        }
+        .snake-direction-badge {
+            color: #0284c7;
+            font-size: 11px;
+            font-weight: 800;
+        }
+        .snake-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4px;
+        }
+        @media (max-width: 900px) {
+            .snake-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 4px;
+            }
+        }
+        .snake-box {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 5px;
+            padding: 5px 2px;
+            text-align: center;
+            transition: all 0.2s ease;
+            position: relative;
+            min-height: 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .snake-box.active-pick {
+            border-color: #16a34a;
+            background: #dcfce7;
+            box-shadow: 0 0 8px rgba(22, 163, 74, 0.3);
+        }
+        .snake-box.active-pick.user-pick {
+            border-color: #0284c7;
+            background: #e0f2fe;
+            box-shadow: 0 0 8px rgba(2, 132, 199, 0.4);
+        }
+        .snake-box.completed-pick {
+            opacity: 0.45;
+            background: #e2e8f0;
+        }
+        .snake-pick-no {
+            font-size: 9px;
+            font-weight: 800;
+            color: #0284c7;
+        }
+        .snake-team-name {
+            font-size: 10px;
+            font-weight: 700;
+            color: #0f172a;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            padding: 0 2px;
+        }
+        .snake-user-badge {
+            font-size: 8px;
+            color: #0284c7;
+            font-weight: 800;
+        }
+        
+        .controls { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+        .btn-group { display: flex; gap: 5px; flex-wrap: wrap; }
+        input, select, button { 
+            padding: 7px 11px; 
+            border-radius: 6px; 
+            border: 1px solid #cbd5e1; 
+            background: #ffffff; 
+            color: #0f172a; 
+            font-size: 12px; 
+        }
+        input:focus, select:focus { border-color: #0284c7; outline: none; }
+        select:disabled { opacity: 0.6; cursor: not-allowed; background: #f1f5f9; }
+        
+        .btn-filter { cursor: pointer; transition: 0.2s; font-weight: 600; }
+        .btn-filter.active { 
+            background: #0284c7; 
+            color: #ffffff; 
+            font-weight: bold; 
+            border-color: #0284c7; 
+        }
+        .btn-undo { background: #f1f5f9; cursor: pointer; border: 1px solid #cbd5e1; font-weight: bold; }
+        .btn-undo:hover { background: #e2e8f0; }
+        .btn-action { background: #ffffff; cursor: pointer; border: 1px solid #0284c7; color: #0284c7; font-weight: 600; }
+        .btn-action:hover { background: #e0f2fe; }
+        .btn-rankings { background: #ffffff; cursor: pointer; border: 1px solid #ca8a04; color: #a16207; font-weight: bold; }
+        .btn-rankings:hover { background: #fef9c3; }
+        .btn-reset { background: #fee2e2; cursor: pointer; border: 1px solid #ef4444; color: #b91c1c; font-weight: bold; }
+        .btn-reset:hover { background: #fca5a5; }
+        
+        .table-container { 
+            background: #ffffff; 
+            border-radius: 8px; 
+            border: 1px solid #cbd5e1; 
+            overflow-x: auto; 
+            max-height: 70vh; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-size: 12px; }
+        th { background: #f8fafc; color: #475569; font-weight: 700; text-transform: uppercase; font-size: 11px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid #cbd5e1; }
+        tr:hover { background: #f1f5f9; }
+        
+        .badge { padding: 2px 6px; border-radius: 4px; font-weight: 800; font-size: 10px; letter-spacing: 0.5px; }
+        .badge-QB { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; }
+        .badge-RB { background: #dcfce7; color: #15803d; border: 1px solid #4ade80; }
+        .badge-WR { background: #e0f2fe; color: #0369a1; border: 1px solid #38bdf8; }
+        .badge-TE { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+        .badge-K { background: #f3e8ff; color: #7e22ce; border: 1px solid #c084fc; }
+        .badge-DEF { background: #ede9fe; color: #4338ca; border: 1px solid #a5b4fc; }
+        
+        .badge-depth { font-size: 10px; padding: 2px 5px; border-radius: 3px; font-weight: 800; display: inline-block; white-space: nowrap; }
+        .badge-depth-QB { background: #fee2e2; color: #b91c1c; }
+        .badge-depth-RB { background: #dcfce7; color: #15803d; }
+        .badge-depth-WR { background: #e0f2fe; color: #0369a1; }
+        .badge-depth-TE { background: #fef3c7; color: #b45309; }
+        .badge-depth-K  { background: #f3e8ff; color: #7e22ce; }
+        .badge-depth-DEF{ background: #ede9fe; color: #4338ca; }
+        
+        .badge-tier-ender { background: #ef4444; color: #ffffff; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 3px; white-space: nowrap; }
+        .badge-tier-count { background: #e2e8f0; color: #334155; font-size: 9px; font-weight: 700; padding: 1px 4px; border-radius: 3px; border: 1px solid #cbd5e1; white-space: nowrap; }
+        .badge-stack { background: #fef9c3; color: #854d0e; border: 1px solid #facc15; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 3px; white-space: nowrap; }
+        .badge-upside { background: #dcfce7; color: #166534; border: 1px solid #86efac; font-size: 9px; font-weight: 800; padding: 1px 4px; border-radius: 3px; white-space: nowrap; }
+        .badge-bye { background: #f1f5f9; color: #64748b; font-size: 9px; padding: 1px 4px; border-radius: 3px; border: 1px solid #cbd5e1; font-weight: 600; white-space: nowrap; }
+        .badge-bye-conflict { background: #fee2e2; color: #b91c1c; border: 1px solid #f87171; font-size: 9px; font-weight: bold; padding: 1px 4px; border-radius: 3px; white-space: nowrap; }
+        
+        .pill-survive { 
+            font-size: 10px; 
+            font-weight: 800; 
+            padding: 1px 6px; 
+            border-radius: 3px; 
+            display: inline-flex; 
+            align-items: center; 
+            white-space: nowrap; 
+            flex-shrink: 0; 
+        }
+        .survive-high { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+        .survive-med { background: #fef3c7; color: #b45309; border: 1px solid #fcd34d; }
+        .survive-low { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+        
+        .badge-team { background: #f1f5f9; color: #334155; font-size: 10px; padding: 2px 4px; border-radius: 3px; font-weight: 600; border: 1px solid #cbd5e1; white-space: nowrap; }
+        
+        .btn-draft { 
+            background: #16a34a; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: 800; 
+            border-radius: 4px; 
+            padding: 5px 11px; 
+            color: #ffffff; 
+            font-size: 11px; 
+            transition: 0.15s;
+            flex-shrink: 0;
+        }
+        .btn-draft:hover { background: #15803d; }
+        
+        .vorp-positive { color: #16a34a; font-weight: bold; }
+        .vorp-negative { color: #94a3b8; }
+        
+        .sidebar { display: flex; flex-direction: column; gap: 12px; }
+        .sidebar-panel { 
+            background: #ffffff; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 8px; 
+            padding: 12px; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        .sidebar-title { 
+            font-size: 12px; 
+            font-weight: bold; 
+            text-transform: uppercase; 
+            color: #0284c7; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 8px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .cliff-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .cliff-box { 
+            background: #f8fafc; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 5px; 
+            padding: 6px 8px; 
+            text-align: center; 
+        }
+        .cliff-box.cliff-high-box { 
+            border-color: #ef4444; 
+            background: #fee2e2; 
+        }
+        .cliff-pos-name { font-size: 11px; font-weight: bold; margin-bottom: 2px; }
+        .cliff-val-text { font-size: 12px; font-weight: 800; color: #475569; }
+        .cliff-val-text.high-drop { color: #b91c1c; }
+        
+        /* 3-LINE TARGET STACK */
+        .target-stack { display: flex; flex-direction: column; gap: 8px; }
+        .target-card { 
+            background: #ffffff; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            padding: 8px 10px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 10px;
+            transition: 0.2s; 
+        }
+        .target-card:hover { border-color: #0284c7; }
+        .target-left { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            flex: 1; 
+            min-width: 0; 
+        }
+        .target-rank { 
+            font-size: 14px; 
+            font-weight: 800; 
+            color: #0284c7; 
+            min-width: 20px; 
+            text-align: center; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .target-details { 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center;
+            gap: 3px; 
+            min-width: 0; 
+            flex: 1; 
+        }
+        .target-row1 { 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+            flex-wrap: nowrap; 
+            overflow: hidden; 
+            line-height: 1.2;
+        }
+        .target-name { 
+            font-size: 13px; 
+            font-weight: bold; 
+            color: #0f172a; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        .target-row2 { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            font-size: 11px; 
+            white-space: nowrap; 
+            flex-wrap: nowrap;
+            line-height: 1.2;
+        }
+        .target-row3 { 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+            flex-wrap: wrap; 
+            margin-top: 1px; 
+            line-height: 1;
+        }
+        
+        .feed-container { max-height: 36vh; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 2px; }
+        .feed-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 5px; padding: 6px 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+        .feed-item.feed-user { border-color: #0284c7; background: #e0f2fe; }
+        .feed-pick-badge { font-weight: bold; color: #0284c7; font-size: 11px; margin-right: 6px; }
+        
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+        .modal-content { background: #ffffff; border: 1px solid #cbd5e1; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15); padding: 18px; border-radius: 8px; max-width: 760px; width: 92%; max-height: 85vh; overflow-y: auto; }
+        
+        .rank-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
+        .rank-card:hover { border-color: #0284c7; }
+        .rank-card.rank-user { border-color: #0284c7; background: #e0f2fe; }
+        .rank-bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; margin: 6px 0; overflow: hidden; }
+        .rank-bar-fill { background: linear-gradient(90deg, #0284c7, #16a34a); height: 100%; }
+        .rank-lineup-drilldown { display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid #cbd5e1; font-size: 11px; }
+        .rank-lineup-drilldown.open { display: block; }
+        .starter-slot-row { display: grid; grid-template-columns: 60px 1fr 60px; gap: 6px; padding: 2px 0; border-bottom: 1px solid #f1f5f9; }
+        .starter-slot-label { font-weight: bold; color: #64748b; font-size: 10px; }
+
+        .accordion-header { background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; user-select: none; }
+        .accordion-header:hover { border-color: #0284c7; }
+        .accordion-header.active { border-color: #0284c7; background: #ffffff; border-bottom-left-radius: 0; border-bottom-right-radius: 0; margin-bottom: 0; }
+        .accordion-body { background: #ffffff; border: 1px solid #0284c7; border-top: none; padding: 10px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; margin-bottom: 6px; display: none; }
+        .accordion-body.open { display: block; }
+        .roster-pos-group { margin-bottom: 6px; }
+        .roster-pos-title { font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 3px; }
+        .roster-pill { display: inline-block; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 11px; margin: 2px 3px 2px 0; border: 1px solid #cbd5e1; }
+        
+        .team-edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="layout-grid">
+        <!-- LEFT COLUMN: HEADER, STATUS, SNAKE BAR, CONTROLS & BOARD -->
+        <div>
+            <div class="header-meta">
+                <div>
+                    <h1>🎩 Hat's Fantasy League Draft Engine</h1>
+                    <p class="subtitle">1 QB | 3 WR | 2 RB | 1 TE | 1 FLEX | 14 Rounds | 0.5 PPR</p>
+                </div>
+                <div>
+                    <span id="feedStatusPill" class="badge-depth badge-depth-WR" style="font-size: 11px; padding: 4px 10px;">
+                        ⏳ Connecting to live feed...
+                    </span>
+                </div>
+            </div>
+
+            <!-- STATUS BAR -->
+            <div class="status-grid">
+                <div class="card">
+                    <div class="card-label">Your Draft Position <span id="lockBadge" style="display:none; color:#ef4444;">(LOCKED)</span></div>
+                    <select id="userSlotSelect" onchange="setUserSlot(this.value)" style="width: 100%; font-weight: bold;"></select>
+                </div>
+                <div class="card">
+                    <div class="card-label">Current Pick (On Clock)</div>
+                    <div class="card-val" id="currentPickDisplay">Round 1, Pick 1</div>
+                    <div style="font-size: 11px; color: #64748b;" id="currentTeamDisplay">Team 1 is picking</div>
+                </div>
+                <div class="card">
+                    <div class="card-label">Your Next Pick</div>
+                    <div class="card-val" id="userNextPickDisplay">Pick 1.01</div>
+                    <div style="font-size: 11px; color: #0284c7;" id="gapDisplay">0 picks away</div>
+                </div>
+            </div>
+
+            <div id="alertBanner" class="alert-banner">
+                <span id="alertText">⚠️ High Run Risk detected ahead of your turn!</span>
+            </div>
+
+            <!-- SNAKE TRACKER (14 ROUNDS) -->
+            <div class="snake-tracker-panel">
+                <div class="snake-header">
+                    <span id="snakeRoundLabel">ROUND 1</span>
+                    <span id="snakeDirectionLabel" class="snake-direction-badge">➡️ SNAKE ORDER: Team 1 → Team 12</span>
+                </div>
+                <div class="snake-grid" id="snakeGridContainer"></div>
+            </div>
+
+            <!-- CONTROLS & FILTER -->
+            <div class="controls">
+                <div class="btn-group">
+                    <button class="btn-filter active" onclick="setPosFilter('ALL')">ALL</button>
+                    <button class="btn-filter" onclick="setPosFilter('QB')">QB</button>
+                    <button class="btn-filter" onclick="setPosFilter('RB')">RB</button>
+                    <button class="btn-filter" onclick="setPosFilter('WR')">WR</button>
+                    <button class="btn-filter" onclick="setPosFilter('TE')">TE</button>
+                    <button class="btn-filter" onclick="setPosFilter('K')">K</button>
+                    <button class="btn-filter" onclick="setPosFilter('DEF')">DEF</button>
+                </div>
+                <div class="btn-group">
+                    <input type="text" id="searchInput" placeholder="Search player, team, depth..." onkeyup="renderTable()" style="min-width: 160px;">
+                    <button class="btn-action" onclick="showTeamNamesModal()">⚙️ Teams</button>
+                    <button class="btn-rankings" onclick="showRankingsModal()">🏆 Power Rankings</button>
+                    <button class="btn-action" onclick="showRostersModal()">📋 Rosters</button>
+                    <button class="btn-undo" onclick="undoLastPick()">↩ Undo</button>
+                    <button class="btn-reset" onclick="resetDraft()">🗑️ Reset</button>
+                </div>
+            </div>
+
+            <!-- MAIN DRAFT BOARD -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Player</th>
+                            <th>Team</th>
+                            <th>Depth</th>
+                            <th>Custom Pts</th>
+                            <th>VORP</th>
+                            <th>Survival %</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="playerTable"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-panel">
+                <div class="sidebar-title">
+                    <span>📉 Positional Cliff (VONA)</span>
+                    <span id="cliffHorizonLabel" style="font-size: 10px; color: #64748b;">Loss If Passed</span>
+                </div>
+                <div class="cliff-grid" id="cliffGridContainer"></div>
+            </div>
+
+            <div class="sidebar-panel" style="border-color: #0284c7;">
+                <div class="sidebar-title">
+                    <span>🎯 Top Targets</span>
+                    <span id="targetNextPickLabel" style="font-size: 10px; color: #0284c7;">Pick 1.01</span>
+                </div>
+                <div class="target-stack" id="targetCardsContainer"></div>
+            </div>
+
+            <div class="sidebar-panel">
+                <div class="sidebar-title">
+                    <span>📜 Draft Feed</span>
+                    <span id="feedCount" style="font-size: 10px; color: #64748b;">0 picks</span>
+                </div>
+                <div class="feed-container" id="draftFeedContainer">
+                    <div style="color: #64748b; font-size: 11px; text-align: center; padding: 20px 0;">No picks made yet.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- STARTING LINEUP POWER RANKINGS MODAL -->
+<div id="rankingsModal" class="modal" onclick="closeModal(event, 'rankingsModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 style="color: #0284c7; margin-top: 0; font-size: 18px;">🏆 17-Game Lineup Power Rankings</h2>
+        <p style="font-size: 11px; color: #64748b; margin-bottom: 12px;">
+            Projected weekly matchup score (PPG) based on optimal starting lineups (1 QB, 2 RB, 3 WR, 1 TE, 1 FLEX, 1 K, 1 DEF). Click any team to inspect starters:
+        </p>
+        <div id="rankingsList"></div>
+        <button style="margin-top: 12px; width: 100%; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 8px; cursor: pointer; color:#0f172a; font-weight:bold;" onclick="document.getElementById('rankingsModal').style.display='none'">Close</button>
+    </div>
+</div>
+
+<!-- TEAM NAMES MODAL -->
+<div id="namesModal" class="modal" onclick="closeModal(event, 'namesModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 style="color: #0284c7; margin-top: 0; font-size: 17px;">Hat's Fantasy League Teams</h2>
+        <div class="team-edit-grid" id="teamNamesInputs"></div>
+        <button style="width: 100%; background: #0284c7; color:#ffffff; border: none; font-weight: bold; cursor: pointer; padding: 8px;" onclick="saveTeamNames()">Save Team Names</button>
+    </div>
+</div>
+
+<!-- ACCORDION TEAM ROSTERS MODAL -->
+<div id="rosterModal" class="modal" onclick="closeModal(event, 'rosterModal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h2 style="color: #0284c7; margin-top: 0; font-size: 17px;">Team Rosters Tracker</h2>
+        <div id="rosterDetails"></div>
+        <button style="margin-top: 12px; width: 100%; background: #f1f5f9; border: 1px solid #cbd5e1; padding: 7px; cursor: pointer; color:#0f172a; font-weight:bold;" onclick="document.getElementById('rosterModal').style.display='none'">Close</button>
+    </div>
+</div>
+
+<script>
+    /* EXACT LEAGUE CONSTANTS FOR HAT'S FANTASY LEAGUE */
+    const TOTAL_TEAMS = 12;
+    const MAX_ROUNDS = 14; // 10 Starters + 4 Bench
+    const REGULAR_SEASON_GAMES = 17;
+    // 1QB, 2RB, 3WR, 1TE, 1Flex Baselines
+    const BASELINES = { 'QB': 12, 'RB': 30, 'WR': 42, 'TE': 12, 'K': 12, 'DEF': 12 };
+    const STORAGE_KEY = 'hats_fantasy_league_draft_state_v3';
+
+    const BYE_WEEKS = {
+        'CAR': 5, 'KC': 5,
+        'CIN': 6, 'DET': 6, 'MIA': 6, 'MIN': 6,
+        'BUF': 7, 'JAX': 7, 'LAC': 7, 'WAS': 7,
+        'HOU': 8, 'NO': 8, 'NYG': 8, 'SF': 8,
+        'PIT': 9, 'TEN': 9,
+        'CHI': 10, 'DEN': 10, 'PHI': 10, 'TB': 10,
+        'ATL': 11, 'CLE': 11, 'GB': 11, 'LAR': 11, 'NE': 11, 'SEA': 11,
+        'BAL': 13, 'IND': 13, 'LV': 13, 'NYJ': 13,
+        'ARI': 14, 'DAL': 14
+    };
+
+    let userSlot = 1;
+    let currentOverallPick = 1;
+    let draftHistory = [];
+    let currentPosFilter = 'ALL';
+    let expandedTeamId = null;
+    let expandedRankTeamId = null;
+    let players = [];
+    let posBaselines = {};
+
+    let teams = {};
+    for (let i = 1; i <= TOTAL_TEAMS; i++) {
+        teams[i] = { id: i, name: `Team ${i}`, roster: { 'QB': [], 'RB': [], 'WR': [], 'TE': [], 'K': [], 'DEF': [] } };
+    }
+
+    function saveDraftState() {
+        try {
+            const state = { userSlot, currentOverallPick, teams, draftHistory };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            console.error("Auto-save failed", e);
+        }
+    }
+
+    function loadDraftState() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return false;
+        try {
+            const state = JSON.parse(saved);
+            userSlot = state.userSlot || 1;
+            currentOverallPick = state.currentOverallPick || 1;
+            teams = state.teams || teams;
+            draftHistory = state.draftHistory || [];
+
+            draftHistory.forEach(item => {
+                let p = players.find(x => x.name === item.player.name);
+                if (p) p.drafted = true;
+            });
+
+            return true;
+        } catch (e) {
+            console.error("Failed to restore saved draft state", e);
+            return false;
+        }
+    }
+
+    function resetDraft() {
+        let confirmReset = confirm("⚠️ RESET HAT'S FANTASY LEAGUE DRAFT?\n\nThis will clear all drafted players back to Pick 1.01. Are you sure?");
+        if (confirmReset) {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+    }
+
+    /* SCORING FORMULA (Custom Yahoo 0.5 PPR, 25 yds/pt pass, 4 pt pass TD, -2 INT, 10 yds/pt K) */
+    function calculatePts(p) {
+        if (p.pos === 'K') return parseFloat(((p.fgYds * 0.10) + (p.pat * 1.0)).toFixed(2));
+        if (p.pos === 'DEF') return parseFloat(p.pts.toFixed(2));
+        let pass = ((p.passYds || 0) * 0.04) + ((p.passTd || 0) * 4.0) + ((p.int || 0) * -2.0);
+        let rush = ((p.rushYds || 0) * 0.10) + ((p.rushTd || 0) * 6.0);
+        let rec  = ((p.rec || 0) * 0.50) + ((p.recYds || 0) * 0.10) + ((p.recTd || 0) * 6.0);
+        let fum  = ((p.fum || 0) * -2.0);
+        return parseFloat((pass + rush + rec + fum).toFixed(2));
+    }
+
+    function getTeamAtPick(pick) {
+        let round = Math.floor((pick - 1) / TOTAL_TEAMS) + 1;
+        let posInRound = (pick - 1) % TOTAL_TEAMS + 1;
+        return round % 2 !== 0 ? posInRound : (TOTAL_TEAMS - posInRound + 1);
+    }
+
+    function formatPick(pick) {
+        let round = Math.floor((pick - 1) / TOTAL_TEAMS) + 1;
+        let posInRound = (pick - 1) % TOTAL_TEAMS + 1;
+        return `${round}.${posInRound < 10 ? '0' + posInRound : posInRound}`;
+    }
+
+    function populateSlotDropdown() {
+        let select = document.getElementById('userSlotSelect');
+        select.innerHTML = '';
+        for (let i = 1; i <= TOTAL_TEAMS; i++) {
+            let opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = `${teams[i].name} (Pick 1.${i < 10 ? '0' + i : i})`;
+            if (i === userSlot) opt.selected = true;
+            select.appendChild(opt);
+        }
+    }
+
+    function setUserSlot(slot) {
+        if (draftHistory.length > 0) return;
+        userSlot = parseInt(slot);
+        saveDraftState();
+        updateStatusPanel();
+        renderTable();
+        renderTopTargets();
+        renderPositionalCliffs();
+        renderSnakeTracker();
+    }
+
+    function showTeamNamesModal() {
+        let container = document.getElementById('teamNamesInputs');
+        container.innerHTML = '';
+        for (let i = 1; i <= TOTAL_TEAMS; i++) {
+            container.innerHTML += `
+                <div>
+                    <label style="font-size: 11px; color: #64748b; font-weight: bold;">Slot ${i} (Pick 1.${i < 10 ? '0' + i : i})</label>
+                    <input type="text" id="teamInput_${i}" value="${teams[i].name}" style="width: 100%; box-sizing: border-box; margin-top: 2px;">
+                </div>
+            `;
+        }
+        document.getElementById('namesModal').style.display = 'flex';
+    }
+
+    function saveTeamNames() {
+        for (let i = 1; i <= TOTAL_TEAMS; i++) {
+            let val = document.getElementById(`teamInput_${i}`).value.trim();
+            if (val) teams[i].name = val;
+        }
+        document.getElementById('namesModal').style.display = 'none';
+        saveDraftState();
+        populateSlotDropdown();
+        updateStatusPanel();
+        renderTable();
+        renderTopTargets();
+        renderDraftFeed();
+        renderPositionalCliffs();
+        renderSnakeTracker();
+    }
+
+    async function loadLiveFeed() {
+        let statusPill = document.getElementById('feedStatusPill');
+        try {
+            let res = await fetch('./projections.json', { cache: 'no-store' });
+            if (res.ok) {
+                players = await res.json();
+                if (statusPill) {
+                    statusPill.innerHTML = `🟢 Live Sync Connected (${players.length} Players)`;
+                    statusPill.className = 'badge-depth badge-depth-RB';
+                }
+            } else {
+                throw new Error("HTTP " + res.status);
+            }
+        } catch (e) {
+            console.error("Could not load projections.json", e);
+            if (statusPill) {
+                statusPill.innerHTML = `🔴 Offline Fallback Mode`;
+                statusPill.className = 'badge-depth badge-depth-QB';
+            }
+        }
+        initEngine();
+    }
+
+    function initEngine() {
+        players.forEach(p => {
+            p.pts = calculatePts(p);
+            p.ppg = parseFloat((p.pts / REGULAR_SEASON_GAMES).toFixed(2));
+            if (p.drafted === undefined) p.drafted = false;
+        });
+
+        posBaselines = {};
+        Object.keys(BASELINES).forEach(pos => {
+            let posPlayers = players.filter(p => p.pos === pos).sort((a,b) => b.pts - a.pts);
+            let rank = BASELINES[pos];
+            let baselinePts = posPlayers[rank - 1] ? posPlayers[rank - 1].pts : (posPlayers[posPlayers.length - 1] ? posPlayers[posPlayers.length - 1].pts : 0);
+            posBaselines[pos] = baselinePts;
+        });
+
+        players.forEach(p => {
+            p.vorp = parseFloat((p.pts - posBaselines[p.pos]).toFixed(2));
+        });
+
+        loadDraftState();
+        populateSlotDropdown();
+        updateStatusPanel();
+        renderTable();
+        renderTopTargets();
+        renderDraftFeed();
+        renderPositionalCliffs();
+        renderSnakeTracker();
+    }
+
+    function renderSnakeTracker() {
+        let container = document.getElementById('snakeGridContainer');
+        let dirLabel = document.getElementById('snakeDirectionLabel');
+        let roundLabel = document.getElementById('snakeRoundLabel');
+        if (!container) return;
+
+        let round = Math.floor((currentOverallPick - 1) / TOTAL_TEAMS) + 1;
+        let isReverse = (round % 2 === 0);
+
+        roundLabel.innerText = `ROUND ${round}`;
+        dirLabel.innerHTML = isReverse 
+            ? `⬅️ REVERSE ORDER: ${teams[TOTAL_TEAMS].name} → ${teams[1].name}`
+            : `➡️ SNAKE ORDER: ${teams[1].name} → ${teams[TOTAL_TEAMS].name}`;
+
+        container.innerHTML = '';
+        for (let slot = 1; slot <= TOTAL_TEAMS; slot++) {
+            let pickNum = (round - 1) * TOTAL_TEAMS + slot;
+            let teamId = getTeamAtPick(pickNum);
+            let t = teams[teamId];
+            let isUser = (teamId === userSlot);
+            let isCurrent = (pickNum === currentOverallPick);
+            let isDone = (pickNum < currentOverallPick);
+
+            let boxClass = 'snake-box';
+            if (isCurrent) boxClass += ' active-pick';
+            if (isCurrent && isUser) boxClass += ' user-pick';
+            if (isDone) boxClass += ' completed-pick';
+
+            let formatted = formatPick(pickNum);
+            let userIndicator = isUser ? `<span class="snake-user-badge">⚡ (YOU)</span>` : '';
+
+            container.innerHTML += `
+                <div class="${boxClass}" title="Pick ${formatted} - ${t.name}">
+                    <div class="snake-pick-no">${formatted}</div>
+                    <div class="snake-team-name">${t.name}</div>
+                    ${userIndicator}
+                </div>
+            `;
+        }
+    }
+
+    function getActiveDraftGap() {
+        let currentTeam = getTeamAtPick(currentOverallPick);
+        let isOnClock = (currentTeam === userSlot);
+        let targetPick = null;
+        
+        if (isOnClock) {
+            let p = currentOverallPick + 1;
+            while (p <= TOTAL_TEAMS * MAX_ROUNDS) {
+                if (getTeamAtPick(p) === userSlot) {
+                    targetPick = p;
+                    break;
+                }
+                p++;
+            }
+        } else {
+            let p = currentOverallPick;
+            while (p <= TOTAL_TEAMS * MAX_ROUNDS) {
+                if (getTeamAtPick(p) === userSlot) {
+                    targetPick = p;
+                    break;
+                }
+                p++;
+            }
+        }
+        
+        if (!targetPick) {
+            targetPick = currentOverallPick + TOTAL_TEAMS;
+        }
+
+        let gapTeamIds = [];
+        let startIndex = isOnClock ? (currentOverallPick + 1) : currentOverallPick;
+        for (let p = startIndex; p < targetPick; p++) {
+            if (p <= (TOTAL_TEAMS * MAX_ROUNDS)) {
+                let tId = getTeamAtPick(p);
+                if (tId !== userSlot) {
+                    gapTeamIds.push(tId);
+                }
+            }
+        }
+
+        return { isOnClock, targetPick, gapTeamIds };
+    }
+
+    function calculateVONA() {
+        let { isOnClock, targetPick, gapTeamIds } = getActiveDraftGap();
+
+        let demand = { 'QB': 0, 'RB': 0, 'WR': 0, 'TE': 0, 'K': 0, 'DEF': 0 };
+        let opponentsWithZeroQB = new Set();
+
+        gapTeamIds.forEach(tId => {
+            let t = teams[tId];
+            let qbCount = t.roster.QB.length;
+            let rbCount = t.roster.RB.length;
+            let wrCount = t.roster.WR.length;
+
+            if (qbCount === 0) { 
+                demand.QB += 0.8; 
+                opponentsWithZeroQB.add(tId);
+            }
+
+            if (rbCount < 2) demand.RB += 0.8;
+            else if (rbCount < 4) demand.RB += 0.4;
+
+            if (wrCount < 3) demand.WR += 0.9;
+            else if (wrCount < 5) demand.WR += 0.4;
+
+            if (t.roster.TE.length === 0) demand.TE += 0.5;
+        });
+
+        let vonaValues = {};
+        ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'].forEach(pos => {
+            let available = players.filter(p => !p.drafted && p.pos === pos).sort((a,b) => b.pts - a.pts);
+            if (available.length === 0) {
+                vonaValues[pos] = 0;
+                return;
+            }
+            let bestNow = available[0].pts;
+            let expectedLossRank = Math.min(Math.round(demand[pos]) + 1, available.length);
+            let nextAvailable = available[expectedLossRank - 1] ? available[expectedLossRank - 1].pts : available[available.length - 1].pts;
+            vonaValues[pos] = Math.max(0, parseFloat((bestNow - nextAvailable).toFixed(2)));
+        });
+
+        let userQBCount = teams[userSlot].roster.QB.length;
+        let criticalOpponents = opponentsWithZeroQB.size;
+        let alert = document.getElementById('alertBanner');
+        let alertText = document.getElementById('alertText');
+
+        alert.className = 'alert-banner';
+
+        if (criticalOpponents >= 3 && gapTeamIds.length > 0) {
+            alert.style.display = 'flex';
+            if (userQBCount < 1) {
+                alert.classList.add('alert-risk');
+                alertText.innerHTML = `⚠️ <strong>HIGH QB RUN RISK:</strong> ${criticalOpponents} opponents drafting before your turn have 0 QBs!`;
+            } else {
+                alert.classList.add('alert-opportunity');
+                alertText.innerHTML = `💡 <strong>QB RUN DETECTED:</strong> ${criticalOpponents} opponents need QBs — top WR/RBs will fall to you!`;
+            }
+        } else if (vonaValues.WR >= 18.0) {
+            alert.style.display = 'flex';
+            alert.classList.add('alert-risk');
+            alertText.innerHTML = `⚠️ <strong>STEEP WR CLIFF:</strong> Projected drop of ${vonaValues.WR} pts at WR before your next turn!`;
+        } else {
+            alert.style.display = 'none';
+        }
+
+        return { vonaValues, targetPick, demand };
+    }
+
+    function getSurvivalProbability(player, demandMap) {
+        let expectedDemand = demandMap[player.pos] || 0.5;
+        if (expectedDemand <= 0.05) return 99;
+
+        let availableSamePos = players
+            .filter(p => !p.drafted && p.pos === player.pos)
+            .sort((a,b) => b.vorp - a.vorp);
+        
+        let rankAtPos = availableSamePos.findIndex(p => p.name === player.name) + 1;
+        if (rankAtPos <= 0) return 1;
+
+        let prob = 0.0;
+        for (let k = 0; k < rankAtPos; k++) {
+            let term = Math.pow(expectedDemand, k) * Math.exp(-expectedDemand) / factorial(k);
+            prob += term;
+        }
+
+        return Math.min(99, Math.max(1, Math.round(prob * 100)));
+    }
+
+    function factorial(n) {
+        if (n <= 1) return 1;
+        let res = 1;
+        for (let i = 2; i <= n; i++) res *= i;
+        return res;
+    }
+
+    function getPlayerTierInfo(player) {
+        let tierCutoffs = {
+            'QB': [300, 250, 200, 160],
+            'RB': [220, 175, 140, 100],
+            'WR': [200, 165, 130, 95],
+            'TE': [150, 120, 95, 75],
+            'K':  [140, 120],
+            'DEF':[120, 105]
+        };
+        let cuts = tierCutoffs[player.pos] || [200, 150, 100];
+        let tier = 1;
+        for (let i = 0; i < cuts.length; i++) {
+            if (player.pts < cuts[i]) tier = i + 2;
+            else break;
+        }
+
+        let countInTier = players.filter(p => {
+            if (p.drafted || p.pos !== player.pos) return false;
+            let pTier = 1;
+            for (let i = 0; i < cuts.length; i++) {
+                if (p.pts < cuts[i]) pTier = i + 2;
+                else break;
+            }
+            return pTier === tier;
+        }).length;
+
+        return { tier, countInTier };
+    }
+
+    function getStackInfo(player) {
+        let userRoster = teams[userSlot].roster;
+        if (!player.team || player.team === 'FA') return null;
+
+        if (player.pos === 'QB') {
+            let passCatchers = [...userRoster.WR, ...userRoster.TE];
+            let matched = passCatchers.some(name => {
+                let p = players.find(x => x.name === name);
+                return p && p.team === player.team;
+            });
+            if (matched) return `⚡ ${player.team} STACK`;
+        } else if (player.pos === 'WR' || player.pos === 'TE') {
+            let matched = userRoster.QB.some(name => {
+                let p = players.find(x => x.name === name);
+                return p && p.team === player.team;
+            });
+            if (matched) return `⚡ ${player.team} STACK`;
+        }
+        return null;
+    }
+
+    function getByeWeekStatus(player) {
+        let playerBye = BYE_WEEKS[player.team] || null;
+        if (!playerBye) return { bye: null, isConflict: false };
+
+        let userRoster = teams[userSlot].roster;
+        let isConflict = false;
+
+        if (player.pos === 'QB' && userRoster.QB.length > 0) {
+            let primaryQBName = userRoster.QB[0];
+            let primaryQB = players.find(x => x.name === primaryQBName);
+            if (primaryQB && BYE_WEEKS[primaryQB.team] === playerBye) {
+                isConflict = true;
+            }
+        }
+
+        return { bye: playerBye, isConflict };
+    }
+
+    function isUpsideHandcuff(player, currentPick) {
+        let round = Math.floor((currentPick - 1) / TOTAL_TEAMS) + 1;
+        if (round >= 10 && player.pos === 'RB' && (player.depth === 'RB2' || player.depth === 'RB3')) {
+            return true;
+        }
+        return false;
+    }
+
+    function renderPositionalCliffs() {
+        let container = document.getElementById('cliffGridContainer');
+        let horizonLabel = document.getElementById('cliffHorizonLabel');
+        let { vonaValues, targetPick } = calculateVONA();
+        let positions = ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'];
+
+        if (targetPick) {
+            horizonLabel.innerText = `To Pick ${formatPick(targetPick)}`;
+        } else {
+            horizonLabel.innerText = `Loss If Passed`;
+        }
+
+        container.innerHTML = '';
+        positions.forEach(pos => {
+            let drop = vonaValues[pos] || 0;
+            let isHigh = drop >= 15.0;
+            container.innerHTML += `
+                <div class="cliff-box ${isHigh ? 'cliff-high-box' : ''}">
+                    <div class="cliff-pos-name"><span class="badge badge-${pos}">${pos}</span></div>
+                    <div class="cliff-val-text ${isHigh ? 'high-drop' : ''}">-${drop}</div>
+                </div>
+            `;
+        });
+    }
+
+    function renderTopTargets() {
+        let { targetPick } = getActiveDraftGap();
+        let nextPickDisplay = targetPick || currentOverallPick;
+        document.getElementById('targetNextPickLabel').innerText = `Pick ${formatPick(nextPickDisplay)}`;
+
+        let userRoster = teams[userSlot].roster;
+        let { vonaValues, demand } = calculateVONA();
+
+        let candidates = players.filter(p => !p.drafted).map(p => {
+            let needMultiplier = 1.0;
+            let currentRound = Math.floor((nextPickDisplay - 1) / TOTAL_TEAMS) + 1;
+
+            if (p.pos === 'QB') {
+                if (userRoster.QB.length === 0) needMultiplier = 1.20;
+                else if (userRoster.QB.length >= 1) needMultiplier = 0.50; // Standard 1QB dampener
+            } else if (p.pos === 'WR') {
+                if (userRoster.WR.length < 3) needMultiplier = 1.25;
+            } else if (p.pos === 'RB') {
+                if (userRoster.RB.length < 2) needMultiplier = 1.15;
+            } else if (p.pos === 'TE') {
+                if (userRoster.TE.length >= 1) needMultiplier = 0.50;
+            } else if (p.pos === 'K' || p.pos === 'DEF') {
+                if (currentRound < 13) needMultiplier = 0.20;
+            }
+
+            let stackTag = getStackInfo(p);
+            let stackMultiplier = stackTag ? 1.08 : 1.0;
+            let handcuffBoost = isUpsideHandcuff(p, nextPickDisplay) ? 1.15 : 1.0;
+
+            let targetScore = ((p.vorp * needMultiplier * stackMultiplier * handcuffBoost) + ((vonaValues[p.pos] || 0) * 0.4));
+            return { player: p, targetScore: targetScore, stackTag };
+        });
+
+        candidates.sort((a, b) => b.targetScore - a.targetScore);
+        let top3 = candidates.slice(0, 3);
+
+        let container = document.getElementById('targetCardsContainer');
+        container.innerHTML = '';
+
+        top3.forEach((item, idx) => {
+            let p = item.player;
+            let depthDisplay = p.depth || p.pos;
+            let survivalPct = getSurvivalProbability(p, demand);
+            let survivalClass = survivalPct >= 70 ? 'survive-high' : (survivalPct >= 35 ? 'survive-med' : 'survive-low');
+            
+            let tierInfo = getPlayerTierInfo(p);
+            let tierBadge = tierInfo.countInTier === 1 
+                ? `<span class="badge-tier-ender">🔥 T${tierInfo.tier} ENDER</span>` 
+                : `<span class="badge-tier-count">T${tierInfo.tier}</span>`;
+            
+            let stackBadge = item.stackTag ? `<span class="badge-stack">${item.stackTag}</span>` : '';
+            let upsideBadge = isUpsideHandcuff(p, nextPickDisplay) ? `<span class="badge-upside">🚀 Handcuff</span>` : '';
+            
+            let byeStatus = getByeWeekStatus(p);
+            let byeBadge = byeStatus.isConflict 
+                ? `<span class="badge-bye-conflict">⚠️ Wk ${byeStatus.bye} Conflict</span>` 
+                : (byeStatus.bye ? `<span class="badge-bye">Bye ${byeStatus.bye}</span>` : '');
+
+            let row3Tags = [];
+            if (tierInfo.countInTier === 1) row3Tags.push(tierBadge);
+            if (stackBadge) row3Tags.push(stackBadge);
+            if (upsideBadge) row3Tags.push(upsideBadge);
+
+            let row3HTML = row3Tags.length > 0 ? `<div class="target-row3">${row3Tags.join('')}</div>` : '';
+
+            container.innerHTML += `
+                <div class="target-card">
+                    <div class="target-left">
+                        <span class="target-rank">#${idx + 1}</span>
+                        <div class="target-details">
+                            <div class="target-row1">
+                                <span class="target-name">${p.name}</span>
+                                <span class="badge-depth badge-depth-${p.pos}">${depthDisplay}</span>
+                                <span class="badge-team">${p.team || 'FA'}</span>
+                                ${byeBadge}
+                            </div>
+                            <div class="target-row2">
+                                <span style="color:#0284c7; font-weight:700;">${p.ppg} <span style="font-size:9px; color:#64748b;">PPG</span></span>
+                                <span style="color:#cbd5e1;">•</span>
+                                <span style="color:#16a34a; font-weight:700;">+${p.vorp} <span style="font-size:9px; color:#64748b;">VORP</span></span>
+                                <span style="color:#cbd5e1;">•</span>
+                                <span class="pill-survive ${survivalClass}">${survivalPct}% Survive</span>
+                            </div>
+                            ${row3HTML}
+                        </div>
+                    </div>
+                    <button class="btn-draft" onclick="draftPlayer('${p.name.replace(/'/g, "\\'")}')">Draft</button>
+                </div>
+            `;
+        });
+    }
+
+    function renderDraftFeed() {
+        let container = document.getElementById('draftFeedContainer');
+        document.getElementById('feedCount').innerText = `${draftHistory.length} pick${draftHistory.length === 1 ? '' : 's'}`;
+
+        if (draftHistory.length === 0) {
+            container.innerHTML = `<div style="color: #64748b; font-size: 11px; text-align: center; padding: 20px 0;">No picks made yet.</div>`;
+            return;
+        }
+
+        container.innerHTML = '';
+        for (let i = draftHistory.length - 1; i >= 0; i--) {
+            let item = draftHistory[i];
+            let isUser = item.teamId === userSlot ? 'feed-user' : '';
+            let depthDisplay = item.player.depth || item.player.pos;
+
+            container.innerHTML += `
+                <div class="feed-item ${isUser}">
+                    <div>
+                        <span class="feed-pick-badge">${formatPick(item.pick)}</span>
+                        <strong>${item.player.name}</strong> <span class="badge-depth badge-depth-${item.player.pos}">${depthDisplay}</span> <span class="badge-team">${item.player.team || ''}</span>
+                    </div>
+                    <div style="color: #64748b; font-size: 10px;">${teams[item.teamId].name}</div>
+                </div>
+            `;
+        }
+    }
+
+    function updateStatusPanel() {
+        let currentTeamId = getTeamAtPick(currentOverallPick);
+        let round = Math.floor((currentOverallPick - 1) / TOTAL_TEAMS) + 1;
+        let pickInRound = (currentOverallPick - 1) % TOTAL_TEAMS + 1;
+
+        let pickDisp = document.getElementById('currentPickDisplay');
+        let teamDisp = document.getElementById('currentTeamDisplay');
+        let nextDisp = document.getElementById('userNextPickDisplay');
+        let gapDisp = document.getElementById('gapDisplay');
+        let slotSelect = document.getElementById('userSlotSelect');
+        let lockBadge = document.getElementById('lockBadge');
+
+        if (draftHistory.length > 0) {
+            slotSelect.disabled = true;
+            lockBadge.style.display = 'inline';
+        } else {
+            slotSelect.disabled = false;
+            lockBadge.style.display = 'none';
+        }
+
+        pickDisp.innerHTML = `Round ${round}, Pick ${pickInRound} (${formatPick(currentOverallPick)})`;
+
+        if (currentTeamId === userSlot) {
+            pickDisp.classList.add('on-clock');
+            teamDisp.innerHTML = `🔥 <strong>YOU ARE ON THE CLOCK!</strong> (${teams[userSlot].name})`;
+        } else {
+            pickDisp.classList.remove('on-clock');
+            teamDisp.innerHTML = `${teams[currentTeamId].name} is on the clock`;
+        }
+
+        let { isOnClock, targetPick } = getActiveDraftGap();
+        let displayTarget = isOnClock ? currentOverallPick : targetPick;
+        let gap = displayTarget - currentOverallPick;
+
+        nextDisp.innerHTML = `Pick ${formatPick(displayTarget)}`;
+        gapDisp.innerHTML = (currentTeamId === userSlot) ? `Your current pick` : `${gap} pick${gap > 1 ? 's' : ''} away`;
+    }
+
+    function draftPlayer(name) {
+        let p = players.find(x => x.name === name);
+        if (!p || p.drafted) return;
+
+        let draftingTeamId = getTeamAtPick(currentOverallPick);
+        p.drafted = true;
+        teams[draftingTeamId].roster[p.pos].push(p.name);
+        draftHistory.push({ pick: currentOverallPick, teamId: draftingTeamId, player: p });
+        currentOverallPick++;
+
+        saveDraftState();
+        updateStatusPanel();
+        renderTable();
+        renderTopTargets();
+        renderDraftFeed();
+        renderPositionalCliffs();
+        renderSnakeTracker();
+    }
+
+    function undoLastPick() {
+        if (draftHistory.length === 0) return;
+
+        let last = draftHistory.pop();
+        if (last) {
+            last.player.drafted = false;
+            let teamRoster = teams[last.teamId].roster[last.player.pos];
+            let idx = teamRoster.indexOf(last.player.name);
+            if (idx > -1) teamRoster.splice(idx, 1);
+            currentOverallPick = last.pick;
+        }
+
+        saveDraftState();
+        updateStatusPanel();
+        renderTable();
+        renderTopTargets();
+        renderDraftFeed();
+        renderPositionalCliffs();
+        renderSnakeTracker();
+    }
+
+    function setPosFilter(pos) {
+        currentPosFilter = pos;
+        document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        renderTable();
+    }
+
+    function renderTable() {
+        let tbody = document.getElementById('playerTable');
+        let search = document.getElementById('searchInput').value.toLowerCase().trim();
+        tbody.innerHTML = '';
+
+        let { demand } = calculateVONA();
+
+        let available = players
+            .filter(p => !p.drafted)
+            .filter(p => currentPosFilter === 'ALL' || p.pos === currentPosFilter)
+            .filter(p => {
+                if (!search) return true;
+                let nameMatch = p.name.toLowerCase().includes(search);
+                let teamMatch = (p.team || '').toLowerCase().includes(search);
+                let depthMatch = (p.depth || '').toLowerCase().includes(search);
+                return nameMatch || teamMatch || depthMatch;
+            })
+            .sort((a,b) => b.vorp - a.vorp);
+
+        available.forEach((p, index) => {
+            let vorpClass = p.vorp >= 0 ? 'vorp-positive' : 'vorp-negative';
+            let depthDisplay = p.depth || p.pos;
+            let survivalPct = getSurvivalProbability(p, demand);
+            let survivalClass = survivalPct >= 70 ? 'survive-high' : (survivalPct >= 35 ? 'survive-med' : 'survive-low');
+            
+            let tierInfo = getPlayerTierInfo(p);
+            let tierBadge = tierInfo.countInTier === 1 
+                ? `<span class="badge-tier-ender">🔥 T${tierInfo.tier} ENDER</span>` 
+                : (tierInfo.countInTier === 2 ? `<span class="badge-tier-count">⏳ 2 in T${tierInfo.tier}</span>` : `<span class="badge-tier-count">T${tierInfo.tier}</span>`);
+
+            let stackTag = getStackInfo(p);
+            let stackBadge = stackTag ? `<span class="badge-stack">${stackTag}</span>` : '';
+            let upsideBadge = isUpsideHandcuff(p, currentOverallPick) ? `<span class="badge-upside">🚀 Handcuff</span>` : '';
+            let byeStatus = getByeWeekStatus(p);
+            let byeBadge = byeStatus.isConflict 
+                ? `<span class="badge-bye-conflict">⚠️ Wk ${byeStatus.bye} Conflict</span>` 
+                : (byeStatus.bye ? `<span class="badge-bye">Bye ${byeStatus.bye}</span>` : '');
+
+            let row = `
+                <tr>
+                    <td>#${index + 1}</td>
+                    <td>
+                        <strong>${p.name}</strong> 
+                        ${tierBadge}
+                        ${stackBadge}
+                        ${upsideBadge}
+                        ${byeBadge}
+                    </td>
+                    <td><span class="badge-team">${p.team || 'FA'}</span></td>
+                    <td><span class="badge-depth badge-depth-${p.pos}">${depthDisplay}</span></td>
+                    <td>${p.pts} <span style="color:#64748b; font-size:10px;">(${p.ppg}/wk)</span></td>
+                    <td class="${vorpClass}">${p.vorp > 0 ? '+' + p.vorp : p.vorp}</td>
+                    <td><span class="pill-survive ${survivalClass}">${survivalPct}%</span></td>
+                    <td><button class="btn-draft" onclick="draftPlayer('${p.name.replace(/'/g, "\\'")}')">Draft</button></td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+    }
+
+    /* 17-GAME OPTIMAL LINEUP POWER ENGINE (10 Starters: 1 QB, 2 RB, 3 WR, 1 TE, 1 FLEX, 1 K, 1 DEF) */
+    function getOptimalTeamLineup(teamId) {
+        let t = teams[teamId];
+        let teamPlayers = [];
+        ['QB', 'RB', 'WR', 'TE', 'K', 'DEF'].forEach(pos => {
+            t.roster[pos].forEach(name => {
+                let p = players.find(x => x.name === name);
+                if (p) teamPlayers.push(p);
+            });
+        });
+
+        let qbs = teamPlayers.filter(p => p.pos === 'QB').sort((a,b) => b.ppg - a.ppg);
+        let rbs = teamPlayers.filter(p => p.pos === 'RB').sort((a,b) => b.ppg - a.ppg);
+        let wrs = teamPlayers.filter(p => p.pos === 'WR').sort((a,b) => b.ppg - a.ppg);
+        let tes = teamPlayers.filter(p => p.pos === 'TE').sort((a,b) => b.ppg - a.ppg);
+        let ks  = teamPlayers.filter(p => p.pos === 'K').sort((a,b) => b.ppg - a.ppg);
+        let defs= teamPlayers.filter(p => p.pos === 'DEF').sort((a,b) => b.ppg - a.ppg);
+
+        let basePPG = {
+            'QB': parseFloat((posBaselines['QB'] / REGULAR_SEASON_GAMES).toFixed(2)),
+            'RB': parseFloat((posBaselines['RB'] / REGULAR_SEASON_GAMES).toFixed(2)),
+            'WR': parseFloat((posBaselines['WR'] / REGULAR_SEASON_GAMES).toFixed(2)),
+            'TE': parseFloat((posBaselines['TE'] / REGULAR_SEASON_GAMES).toFixed(2)),
+            'K':  parseFloat((posBaselines['K']  / REGULAR_SEASON_GAMES).toFixed(2)),
+            'DEF':parseFloat((posBaselines['DEF']/ REGULAR_SEASON_GAMES).toFixed(2))
+        };
+
+        let starters = {
+            'QB':   { slot: 'QB',   player: qbs[0] || null, baseline: basePPG['QB'] },
+            'RB1':  { slot: 'RB1',  player: rbs[0] || null, baseline: basePPG['RB'] },
+            'RB2':  { slot: 'RB2',  player: rbs[1] || null, baseline: basePPG['RB'] },
+            'WR1':  { slot: 'WR1',  player: wrs[0] || null, baseline: basePPG['WR'] },
+            'WR2':  { slot: 'WR2',  player: wrs[1] || null, baseline: basePPG['WR'] },
+            'WR3':  { slot: 'WR3',  player: wrs[2] || null, baseline: basePPG['WR'] },
+            'TE':   { slot: 'TE',   player: tes[0] || null, baseline: basePPG['TE'] },
+            'FLEX': { slot: 'FLEX', player: null,           baseline: basePPG['WR'] },
+            'K':    { slot: 'K',    player: ks[0] || null,  baseline: basePPG['K'] },
+            'DEF':  { slot: 'DEF',  player: defs[0] || null,baseline: basePPG['DEF'] }
+        };
+
+        let usedSet = new Set(Object.values(starters).map(s => s.player).filter(p => p !== null));
+
+        // Assign W/R/T FLEX from remaining RBs, WRs, TEs
+        let flexPool = teamPlayers.filter(p => !usedSet.has(p) && ['RB', 'WR', 'TE'].includes(p.pos)).sort((a,b) => b.ppg - a.ppg);
+        if (flexPool.length > 0) {
+            starters['FLEX'].player = flexPool[0];
+            usedSet.add(flexPool[0]);
+        }
+
+        let actualDraftedStarterPPG = 0;
+        let pacingProjectedLineupPPG = 0;
+        let startersCount = 0;
+
+        Object.values(starters).forEach(s => {
+            if (s.player) {
+                actualDraftedStarterPPG += s.player.ppg;
+                pacingProjectedLineupPPG += s.player.ppg;
+                startersCount++;
+            } else {
+                pacingProjectedLineupPPG += s.baseline;
+            }
+        });
+
+        let benchPlayers = teamPlayers.filter(p => !usedSet.has(p)).sort((a,b) => b.ppg - a.ppg);
+        let benchDepthRating = benchPlayers.reduce((acc, p) => acc + (p.ppg * 0.20), 0);
+
+        return {
+            starters,
+            bench: benchPlayers,
+            startersCount,
+            totalDrafted: teamPlayers.length,
+            actualDraftedStarterPPG: parseFloat(actualDraftedStarterPPG.toFixed(1)),
+            pacingProjectedLineupPPG: parseFloat((pacingProjectedLineupPPG + benchDepthRating).toFixed(1)),
+            benchDepthRating: parseFloat(benchDepthRating.toFixed(1))
+        };
+    }
+
+    function toggleRankLineup(teamId) {
+        expandedRankTeamId = (expandedRankTeamId === teamId) ? null : teamId;
+        showRankingsModal();
+    }
+
+    function showRankingsModal() {
+        let container = document.getElementById('rankingsList');
+        let rankings = [];
+
+        for (let i = 1; i <= TOTAL_TEAMS; i++) {
+            let lineupData = getOptimalTeamLineup(i);
+            rankings.push({
+                teamId: i,
+                name: teams[i].name,
+                isUser: i === userSlot,
+                ...lineupData
+            });
+        }
+
+        rankings.sort((a,b) => b.pacingProjectedLineupPPG - a.pacingProjectedLineupPPG);
+        let maxScore = rankings[0].pacingProjectedLineupPPG || 1;
+
+        container.innerHTML = '';
+        rankings.forEach((r, idx) => {
+            let pct = Math.max(15, Math.round((r.pacingProjectedLineupPPG / maxScore) * 100));
+            let isOpen = (expandedRankTeamId === r.teamId);
+
+            let starterSlotsHTML = Object.values(r.starters).map(s => {
+                let p = s.player;
+                let playerName = p ? `<strong>${p.name}</strong> <span style="color:#64748b;">(${p.team || 'FA'})</span>` : `<span style="color:#94a3b8; font-style:italic;">Empty (Est. ${s.baseline} PPG)</span>`;
+                let ppgVal = p ? `<strong style="color:#16a34a;">${p.ppg}</strong> PPG` : `<span style="color:#94a3b8;">${s.baseline}</span>`;
+                return `
+                    <div class="starter-slot-row">
+                        <span class="starter-slot-label">${s.slot}</span>
+                        <span>${playerName}</span>
+                        <span style="text-align: right;">${ppgVal}</span>
+                    </div>
+                `;
+            }).join('');
+
+            let benchHTML = r.bench.length > 0 ? `
+                <div style="margin-top: 6px; font-size: 10px; color: #64748b;">
+                    <strong>Bench Depth (${r.bench.length}):</strong> ${r.bench.map(b => `${b.name} (${b.ppg})`).join(', ')}
+                </div>
+            ` : '';
+
+            container.innerHTML += `
+                <div class="rank-card ${r.isUser ? 'rank-user' : ''}" onclick="toggleRankLineup(${r.teamId})">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="color:${r.isUser ? '#0284c7' : '#0f172a'}; font-size: 13px;">
+                                #${idx + 1} ${r.name} ${r.isUser ? '⚡ (YOU)' : ''}
+                            </strong>
+                            <div style="font-size: 10px; color: #64748b; margin-top: 2px;">
+                                Starters Drafted: <strong style="color:#0284c7;">${r.startersCount}/10</strong> | Active Output: <strong style="color:#16a34a;">${r.actualDraftedStarterPPG} PPG</strong>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 16px; font-weight: 800; color: #16a34a;">${r.pacingProjectedLineupPPG}</span>
+                            <span style="font-size: 10px; color: #64748b;"> Proj PPG</span>
+                            <div style="font-size: 9px; color: #0284c7;">${isOpen ? '▲ Collapse' : '▼ View Lineup'}</div>
+                        </div>
+                    </div>
+                    <div class="rank-bar-bg">
+                        <div class="rank-bar-fill" style="width: ${pct}%;"></div>
+                    </div>
+                    <div class="rank-lineup-drilldown ${isOpen ? 'open' : ''}">
+                        ${starterSlotsHTML}
+                        ${benchHTML}
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('rankingsModal').style.display = 'flex';
+    }
+
+    function toggleTeamAccordion(teamId) {
+        expandedTeamId = expandedTeamId === teamId ? null : teamId;
+        renderRostersAccordion();
+    }
+
+    function renderRostersAccordion() {
+        let container = document.getElementById('rosterDetails');
+        container.innerHTML = '';
+        for (let i = 1; i <= TOTAL_TEAMS; i++) {
+            let t = teams[i];
+            let isUser = i === userSlot ? " (YOU)" : "";
+            let isOpen = expandedTeamId === i;
+            let totalPlayers = t.roster.QB.length + t.roster.RB.length + t.roster.WR.length + t.roster.TE.length + t.roster.K.length + t.roster.DEF.length;
+
+            let html = `
+                <div class="accordion-header ${isOpen ? 'active' : ''}" onclick="toggleTeamAccordion(${i})">
+                    <div>
+                        <strong style="color: ${i === userSlot ? '#0284c7' : '#0f172a'}">${t.name}${isUser}</strong>
+                        <div style="font-size: 10px; color: #64748b; margin-top: 2px;">
+                            QBs: ${t.roster.QB.length} | RBs: ${t.roster.RB.length} | WRs: ${t.roster.WR.length} | TEs: ${t.roster.TE.length} (${totalPlayers} total)
+                        </div>
+                    </div>
+                    <span style="font-size: 12px; color: #0284c7;">${isOpen ? '▲' : '▼'}</span>
+                </div>
+                <div class="accordion-body ${isOpen ? 'open' : ''}">
+                    ${renderPositionPills(t.roster, 'QB')}
+                    ${renderPositionPills(t.roster, 'RB')}
+                    ${renderPositionPills(t.roster, 'WR')}
+                    ${renderPositionPills(t.roster, 'TE')}
+                    ${renderPositionPills(t.roster, 'K')}
+                    ${renderPositionPills(t.roster, 'DEF')}
+                </div>
+            `;
+            container.innerHTML += html;
+        }
+    }
+
+    function renderPositionPills(roster, pos) {
+        let list = roster[pos];
+        if (!list || list.length === 0) return '';
+        return `
+            <div class="roster-pos-group">
+                <div class="roster-pos-title">${pos}s (${list.length})</div>
+                <div>${list.map(name => {
+                    let pObj = players.find(x => x.name === name);
+                    let tm = pObj && pObj.team ? `<span class="badge-team">${pObj.team}</span>` : '';
+                    let ppgStr = pObj ? `<span style="color:#16a34a; font-size:10px; font-weight:bold;">${pObj.ppg} PPG</span>` : '';
+                    return `<span class="roster-pill">${name} ${tm} ${ppgStr}</span>`;
+                }).join('')}</div>
+            </div>
+        `;
+    }
+
+    function showRostersModal() {
+        renderRostersAccordion();
+        document.getElementById('rosterModal').style.display = 'flex';
+    }
+
+    function closeModal(e, modalId) {
+        if (e.target.id === modalId) document.getElementById(modalId).style.display = 'none';
+    }
+
+    loadLiveFeed();
+</script>
+</body>
+</html>
