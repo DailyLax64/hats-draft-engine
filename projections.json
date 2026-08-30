@@ -963,7 +963,7 @@
     "name": "Trey Benson",
     "pos": "RB",
     "team": "ARI",
-    "depth": "RB6",
+    "depth": "RB5",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -4246,21 +4246,6 @@
     "fum": 1
   },
   {
-    "name": "Jake Browning",
-    "pos": "QB",
-    "team": "TB",
-    "depth": "QB2",
-    "passYds": 2800,
-    "passTd": 15,
-    "int": 9,
-    "rushYds": 100,
-    "rushTd": 1,
-    "rec": 0,
-    "recYds": 0,
-    "recTd": 0,
-    "fum": 2
-  },
-  {
     "name": "John Metchie",
     "pos": "WR",
     "team": "CAR",
@@ -5464,6 +5449,21 @@
     "fum": 2
   },
   {
+    "name": "Bryce Lance",
+    "pos": "WR",
+    "team": "NO",
+    "depth": "WR4",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 0,
+    "rushTd": 0,
+    "rec": 30,
+    "recYds": 380,
+    "recTd": 2,
+    "fum": 0
+  },
+  {
     "name": "Kenneth Walker",
     "pos": "RB",
     "team": "KC",
@@ -6022,7 +6022,7 @@
   {
     "name": "Quinn Ewers",
     "pos": "QB",
-    "team": "MIA",
+    "team": "JAX",
     "depth": "QB2",
     "passYds": 2800,
     "passTd": 15,
@@ -6314,21 +6314,6 @@
     "pat": 35
   },
   {
-    "name": "Bub Means",
-    "pos": "WR",
-    "team": "NO",
-    "depth": "WR4",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 0,
-    "rushTd": 0,
-    "rec": 30,
-    "recYds": 380,
-    "recTd": 2,
-    "fum": 0
-  },
-  {
     "name": "Najee Harris",
     "pos": "RB",
     "team": "NYG",
@@ -6508,21 +6493,6 @@
     "recYds": 750,
     "recTd": 5,
     "fum": 1
-  },
-  {
-    "name": "Nick Mullens",
-    "pos": "QB",
-    "team": "JAX",
-    "depth": "QB2",
-    "passYds": 2800,
-    "passTd": 15,
-    "int": 9,
-    "rushYds": 100,
-    "rushTd": 1,
-    "rec": 0,
-    "recYds": 0,
-    "recTd": 0,
-    "fum": 2
   },
   {
     "name": "Malik Benson",
