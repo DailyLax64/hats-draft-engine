@@ -3687,7 +3687,7 @@
     "name": "Blake Grupe",
     "pos": "K",
     "team": "NO",
-    "depth": "K1",
+    "depth": "K2",
     "fgYds": 1090,
     "pat": 34
   },
@@ -5306,21 +5306,6 @@
     "fum": 2
   },
   {
-    "name": "Brittain Brown",
-    "pos": "RB",
-    "team": "CHI",
-    "depth": "RB3",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 300,
-    "rushTd": 2,
-    "rec": 15,
-    "recYds": 100,
-    "recTd": 0,
-    "fum": 0
-  },
-  {
     "name": "Zachariah Branch",
     "pos": "WR",
     "team": "ATL",
@@ -6333,21 +6318,6 @@
     "rec": 15,
     "recYds": 100,
     "recTd": 0,
-    "fum": 0
-  },
-  {
-    "name": "Kevin Austin",
-    "pos": "WR",
-    "team": "NO",
-    "depth": "WR4",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 0,
-    "rushTd": 0,
-    "rec": 30,
-    "recYds": 380,
-    "recTd": 2,
     "fum": 0
   },
   {
