@@ -558,7 +558,7 @@
     "name": "Gardner Minshew",
     "pos": "QB",
     "team": "ARI",
-    "depth": "QB2",
+    "depth": "QB3",
     "passYds": 2900,
     "passTd": 15,
     "int": 10,
@@ -588,7 +588,7 @@
     "name": "Drew Lock",
     "pos": "QB",
     "team": "SEA",
-    "depth": "QB2",
+    "depth": "QB3",
     "passYds": 2700,
     "passTd": 14,
     "int": 10,
@@ -4472,6 +4472,21 @@
     "fum": 1
   },
   {
+    "name": "Carson Beck",
+    "pos": "QB",
+    "team": "ARI",
+    "depth": "QB2",
+    "passYds": 2800,
+    "passTd": 15,
+    "int": 9,
+    "rushYds": 100,
+    "rushTd": 1,
+    "rec": 0,
+    "recYds": 0,
+    "recTd": 0,
+    "fum": 2
+  },
+  {
     "name": "Emeka Egbuka",
     "pos": "WR",
     "team": "TB",
@@ -4930,21 +4945,6 @@
     "fum": 1
   },
   {
-    "name": "Riley Leonard",
-    "pos": "QB",
-    "team": "IND",
-    "depth": "QB2",
-    "passYds": 2800,
-    "passTd": 15,
-    "int": 9,
-    "rushYds": 100,
-    "rushTd": 1,
-    "rec": 0,
-    "recYds": 0,
-    "recTd": 0,
-    "fum": 2
-  },
-  {
     "name": "Chris Rodriguez",
     "pos": "RB",
     "team": "JAX",
@@ -5168,6 +5168,21 @@
     "recYds": 380,
     "recTd": 2,
     "fum": 0
+  },
+  {
+    "name": "Anthony Richardson",
+    "pos": "QB",
+    "team": "IND",
+    "depth": "QB2",
+    "passYds": 2800,
+    "passTd": 15,
+    "int": 9,
+    "rushYds": 100,
+    "rushTd": 1,
+    "rec": 0,
+    "recYds": 0,
+    "recTd": 0,
+    "fum": 2
   },
   {
     "name": "Payne Durham",
@@ -5459,6 +5474,21 @@
     "name": "Cade Klubnik",
     "pos": "QB",
     "team": "NYJ",
+    "depth": "QB2",
+    "passYds": 2800,
+    "passTd": 15,
+    "int": 9,
+    "rushYds": 100,
+    "rushTd": 1,
+    "rec": 0,
+    "recYds": 0,
+    "recTd": 0,
+    "fum": 2
+  },
+  {
+    "name": "Brady Cook",
+    "pos": "QB",
+    "team": "MIA",
     "depth": "QB2",
     "passYds": 2800,
     "passTd": 15,
@@ -6545,6 +6575,21 @@
     "recYds": 380,
     "recTd": 2,
     "fum": 0
+  },
+  {
+    "name": "Jalen Milroe",
+    "pos": "QB",
+    "team": "SEA",
+    "depth": "QB2",
+    "passYds": 2800,
+    "passTd": 15,
+    "int": 9,
+    "rushYds": 100,
+    "rushTd": 1,
+    "rec": 0,
+    "recYds": 0,
+    "recTd": 0,
+    "fum": 2
   },
   {
     "name": "Darren Waller",
