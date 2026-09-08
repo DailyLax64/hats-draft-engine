@@ -2688,7 +2688,7 @@
     "name": "Darnell Mooney",
     "pos": "WR",
     "team": "NYG",
-    "depth": "WR4",
+    "depth": "WR3",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -3182,7 +3182,7 @@
   {
     "name": "Van Jefferson",
     "pos": "WR",
-    "team": "PIT",
+    "team": "WAS",
     "depth": "WR2",
     "passYds": 0,
     "passTd": 0,
@@ -5008,15 +5008,15 @@
     "name": "Malachi Fields",
     "pos": "WR",
     "team": "NYG",
-    "depth": "WR3",
+    "depth": "WR2",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
-    "rushYds": 0,
+    "rushYds": 15,
     "rushTd": 0,
-    "rec": 45,
-    "recYds": 550,
-    "recTd": 3,
+    "rec": 60,
+    "recYds": 750,
+    "recTd": 5,
     "fum": 1
   },
   {
@@ -5484,6 +5484,21 @@
     "recYds": 300,
     "recTd": 2,
     "fum": 1
+  },
+  {
+    "name": "Odell Beckham",
+    "pos": "WR",
+    "team": "NYG",
+    "depth": "WR4",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 0,
+    "rushTd": 0,
+    "rec": 30,
+    "recYds": 380,
+    "recTd": 2,
+    "fum": 0
   },
   {
     "name": "Cyrus Allen",
@@ -6575,21 +6590,6 @@
     "depth": "K1",
     "fgYds": 1150,
     "pat": 35
-  },
-  {
-    "name": "Darius Slayton",
-    "pos": "WR",
-    "team": "NYG",
-    "depth": "WR2",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 15,
-    "rushTd": 0,
-    "rec": 60,
-    "recYds": 750,
-    "recTd": 5,
-    "fum": 1
   },
   {
     "name": "Malik Benson",
