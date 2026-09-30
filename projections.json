@@ -1007,7 +1007,7 @@
   {
     "name": "Jerome Ford",
     "pos": "RB",
-    "team": "MIN",
+    "team": "CLE",
     "depth": "RB2",
     "passYds": 0,
     "passTd": 0,
@@ -1187,7 +1187,7 @@
   {
     "name": "Audric Estime",
     "pos": "RB",
-    "team": "DEN",
+    "team": "MIN",
     "depth": "RB2",
     "passYds": 0,
     "passTd": 0,
@@ -1293,7 +1293,7 @@
     "name": "Jordan Mason",
     "pos": "RB",
     "team": "MIN",
-    "depth": "RB7",
+    "depth": "RB5",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -1668,7 +1668,7 @@
     "name": "Michael Carter",
     "pos": "RB",
     "team": "TEN",
-    "depth": "RB2",
+    "depth": "RB5",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -2013,7 +2013,7 @@
     "name": "Brandon Aiyuk",
     "pos": "WR",
     "team": "SF",
-    "depth": "WR9",
+    "depth": "WR10",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -2613,7 +2613,7 @@
     "name": "Ricky Pearsall",
     "pos": "WR",
     "team": "SF",
-    "depth": "WR10",
+    "depth": "WR11",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -3003,7 +3003,7 @@
     "name": "Andrei Iosivas",
     "pos": "WR",
     "team": "CIN",
-    "depth": "WR6",
+    "depth": "WR5",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -3615,7 +3615,7 @@
     "name": "Jason Sanders",
     "pos": "K",
     "team": "NYJ",
-    "depth": "K1",
+    "depth": "K2",
     "fgYds": 1190,
     "pat": 42
   },
@@ -3686,7 +3686,7 @@
   {
     "name": "Blake Grupe",
     "pos": "K",
-    "team": "NYJ",
+    "team": "NO",
     "depth": "K1",
     "fgYds": 1090,
     "pat": 34
@@ -4306,6 +4306,21 @@
     "fum": 1
   },
   {
+    "name": "Braxton Berrios",
+    "pos": "WR",
+    "team": "NYG",
+    "depth": "WR4",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 0,
+    "rushTd": 0,
+    "rec": 30,
+    "recYds": 380,
+    "recTd": 2,
+    "fum": 0
+  },
+  {
     "name": "Dominic Zvada",
     "pos": "K",
     "team": "NYG",
@@ -4371,21 +4386,6 @@
     "rec": 35,
     "recYds": 380,
     "recTd": 3,
-    "fum": 1
-  },
-  {
-    "name": "Zach Ertz",
-    "pos": "TE",
-    "team": "PHI",
-    "depth": "TE1",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 0,
-    "rushTd": 0,
-    "rec": 60,
-    "recYds": 650,
-    "recTd": 5,
     "fum": 1
   },
   {
@@ -4590,6 +4590,21 @@
     "recYds": 550,
     "recTd": 3,
     "fum": 1
+  },
+  {
+    "name": "DJ Herman",
+    "pos": "RB",
+    "team": "MIA",
+    "depth": "RB3",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 300,
+    "rushTd": 2,
+    "rec": 15,
+    "recYds": 100,
+    "recTd": 0,
+    "fum": 0
   },
   {
     "name": "Gavin Bartholomew",
@@ -5561,21 +5576,6 @@
     "fum": 1
   },
   {
-    "name": "Odell Beckham",
-    "pos": "WR",
-    "team": "NYG",
-    "depth": "WR4",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 0,
-    "rushTd": 0,
-    "rec": 30,
-    "recYds": 380,
-    "recTd": 2,
-    "fum": 0
-  },
-  {
     "name": "Konata Mumpfield",
     "pos": "WR",
     "team": "LAR",
@@ -6105,16 +6105,16 @@
     "name": "Dareke Young",
     "pos": "WR",
     "team": "LV",
-    "depth": "WR4",
+    "depth": "WR3",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
     "rushYds": 0,
     "rushTd": 0,
-    "rec": 30,
-    "recYds": 380,
-    "recTd": 2,
-    "fum": 0
+    "rec": 45,
+    "recYds": 550,
+    "recTd": 3,
+    "fum": 1
   },
   {
     "name": "Emari Demercado",
@@ -6635,6 +6635,21 @@
     "recYds": 550,
     "recTd": 3,
     "fum": 1
+  },
+  {
+    "name": "Malik Benson",
+    "pos": "WR",
+    "team": "LV",
+    "depth": "WR4",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 0,
+    "rushTd": 0,
+    "rec": 30,
+    "recYds": 380,
+    "recTd": 2,
+    "fum": 0
   },
   {
     "name": "Darren Waller",
