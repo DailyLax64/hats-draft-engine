@@ -4652,21 +4652,6 @@
     "fum": 1
   },
   {
-    "name": "Kyle Trask",
-    "pos": "QB",
-    "team": "DAL",
-    "depth": "QB2",
-    "passYds": 2800,
-    "passTd": 15,
-    "int": 9,
-    "rushYds": 100,
-    "rushTd": 1,
-    "rec": 0,
-    "recYds": 0,
-    "recTd": 0,
-    "fum": 2
-  },
-  {
     "name": "Tyler Huntley",
     "pos": "QB",
     "team": "BAL",
