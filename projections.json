@@ -1413,7 +1413,7 @@
     "name": "Dameon Pierce",
     "pos": "RB",
     "team": "PHI",
-    "depth": "RB2",
+    "depth": "RB5",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -3183,7 +3183,7 @@
     "name": "Van Jefferson",
     "pos": "WR",
     "team": "WAS",
-    "depth": "WR2",
+    "depth": "WR7",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -3423,7 +3423,7 @@
     "name": "Cole Kmet",
     "pos": "TE",
     "team": "CHI",
-    "depth": "TE4",
+    "depth": "TE3",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
@@ -3957,6 +3957,21 @@
     "rec": 30,
     "recYds": 380,
     "recTd": 2,
+    "fum": 0
+  },
+  {
+    "name": "Pierre Strong Jr.",
+    "pos": "RB",
+    "team": "GB",
+    "depth": "RB3",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 300,
+    "rushTd": 2,
+    "rec": 15,
+    "recYds": 100,
+    "recTd": 0,
     "fum": 0
   },
   {
@@ -4757,21 +4772,6 @@
     "fum": 1
   },
   {
-    "name": "Kaleb Johnson",
-    "pos": "RB",
-    "team": "GB",
-    "depth": "RB3",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 300,
-    "rushTd": 2,
-    "rec": 15,
-    "recYds": 100,
-    "recTd": 0,
-    "fum": 0
-  },
-  {
     "name": "Woody Marks",
     "pos": "RB",
     "team": "HOU",
@@ -4805,16 +4805,16 @@
     "name": "RJ Harvey",
     "pos": "RB",
     "team": "DEN",
-    "depth": "RB3",
+    "depth": "RB2",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
-    "rushYds": 300,
-    "rushTd": 2,
-    "rec": 15,
-    "recYds": 100,
-    "recTd": 0,
-    "fum": 0
+    "rushYds": 550,
+    "rushTd": 4,
+    "rec": 25,
+    "recYds": 180,
+    "recTd": 1,
+    "fum": 1
   },
   {
     "name": "Savion Williams",
@@ -5185,6 +5185,21 @@
     "fum": 1
   },
   {
+    "name": "Jaydon Blue",
+    "pos": "RB",
+    "team": "PHI",
+    "depth": "RB2",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 550,
+    "rushTd": 4,
+    "rec": 25,
+    "recYds": 180,
+    "recTd": 1,
+    "fum": 1
+  },
+  {
     "name": "Cody White",
     "pos": "WR",
     "team": "LV",
@@ -5544,21 +5559,6 @@
     "recYds": 100,
     "recTd": 0,
     "fum": 0
-  },
-  {
-    "name": "Jaylin Noel",
-    "pos": "WR",
-    "team": "HOU",
-    "depth": "WR2",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 15,
-    "rushTd": 0,
-    "rec": 60,
-    "recYds": 750,
-    "recTd": 5,
-    "fum": 1
   },
   {
     "name": "Tetairoa McMillan",
@@ -6100,21 +6100,6 @@
     "recYds": 380,
     "recTd": 3,
     "fum": 1
-  },
-  {
-    "name": "Colbie Young",
-    "pos": "WR",
-    "team": "CIN",
-    "depth": "WR4",
-    "passYds": 0,
-    "passTd": 0,
-    "int": 0,
-    "rushYds": 0,
-    "rushTd": 0,
-    "rec": 30,
-    "recYds": 380,
-    "recTd": 2,
-    "fum": 0
   },
   {
     "name": "Austin Hooper",
@@ -6728,6 +6713,21 @@
     "fum": 1
   },
   {
+    "name": "Mitch Tinsley",
+    "pos": "WR",
+    "team": "CIN",
+    "depth": "WR4",
+    "passYds": 0,
+    "passTd": 0,
+    "int": 0,
+    "rushYds": 0,
+    "rushTd": 0,
+    "rec": 30,
+    "recYds": 380,
+    "recTd": 2,
+    "fum": 0
+  },
+  {
     "name": "Juwan Johnson",
     "pos": "TE",
     "team": "NO",
@@ -6791,16 +6791,16 @@
     "name": "J.K. Dobbins",
     "pos": "RB",
     "team": "DEN",
-    "depth": "RB2",
+    "depth": "RB3",
     "passYds": 0,
     "passTd": 0,
     "int": 0,
-    "rushYds": 550,
-    "rushTd": 4,
-    "rec": 25,
-    "recYds": 180,
-    "recTd": 1,
-    "fum": 1
+    "rushYds": 300,
+    "rushTd": 2,
+    "rec": 15,
+    "recYds": 100,
+    "recTd": 0,
+    "fum": 0
   },
   {
     "name": "Colby Parkinson",
